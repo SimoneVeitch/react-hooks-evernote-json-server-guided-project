@@ -1,21 +1,39 @@
-import React from "react";
+import React, {useEffect} from "react";
 import NoteEditor from "./NoteEditor";
 import NoteViewer from "./NoteViewer";
 import Instructions from "./Instructions";
 
-/*
-  Advice: If you cannot figure out how to get this component to work,
-          move the div and getContent up into NoteContainer and
-          try to get it to work in the parent first.
-          Then complete the rest of your app before attempting to
-          refactor to get this Content component to work.
-*/
-function Content() {
+function Content({ selectedNote, onSaveNote, editedNote, setEditedNote, isEditing, setIsEditing}) {
+
+  useEffect(() => {
+    setEditedNote(selectedNote); // Set editedNote when selectedNote changes
+  }, [selectedNote, setEditedNote]);
+
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleSave = (updatedNote) => {
+    onSaveNote(updatedNote);
+    setIsEditing(false);
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    setEditedNote(selectedNote); // Reset editedNote to selectedNote
+  };
+
   const getContent = () => {
-    if (false) {
-      return <NoteEditor />;
-    } else if (false) {
-      return <NoteViewer />;
+    if (isEditing && editedNote) {
+      return (
+        <NoteEditor
+          note={editedNote}
+          onCancel={handleCancelEdit}
+          onSave={(updatedNote) => handleSave(updatedNote)}
+        />
+      );
+    } else if (selectedNote) {
+      return <NoteViewer note={selectedNote} onEdit={handleEdit} />;
     } else {
       return <Instructions />;
     }
